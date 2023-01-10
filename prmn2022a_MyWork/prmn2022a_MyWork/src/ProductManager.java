@@ -16,6 +16,7 @@ public class ProductManager {
         }
     }
 
+
     public void allStockView(){ //商品一覧
         System.out.println("ID  商品名　　価格　　在庫");
         for (int i=0 ; i< products.size() ; i++) {
@@ -24,13 +25,15 @@ public class ProductManager {
         }
     }
 
-    public void allCartViewWithNumber(){
+
+    public void allCartViewWithNumber(){ //カート修正のときのカート内一覧
         System.out.println("番号  商品名　　価格　　在庫");
         for (int i=0 ; i< cart.size() ; i++) {
             System.out.print((i + 1) + "   ");
             cart.get(i).view();
         }
     }
+
 
     public void search(int id){ //商品検索
         products.get(id-1).view();
@@ -49,8 +52,10 @@ public class ProductManager {
         if(changed){
             System.out.println("*****変更後在庫*****");
             allStockView();
+            System.out.println("******************");
         }
     }
+
 
     public void manualStock(int id, int adQty){ //手動在庫補充
         int YesNo = 1;
@@ -71,6 +76,7 @@ public class ProductManager {
             System.out.println("error\n手動入荷を中止します");
         }
     }
+
 
     public void addCart(int id, int buyQty){ //カートに追加
         int newQty = products.get(id-1).getQty() - buyQty;
@@ -120,6 +126,7 @@ public class ProductManager {
         }
     }
 
+
     public void summarizeCart() { //Cart内のproductに重複がある場合に修正する
         ArrayList<Integer> idsInCart = new ArrayList<>(); //カート内の各IDの項目の数（2< で重複）
         ArrayList<Integer> qtysInCart = new ArrayList<>();
@@ -163,6 +170,7 @@ public class ProductManager {
         cart = newCart;
     }
 
+
     public void canselCart(){
         for(int i=0 ; i<cart.size() ; i++){
             for(int j=0 ; j<products.size() ; j++){
@@ -171,6 +179,11 @@ public class ProductManager {
                 }
             }
         }
+        cart.clear();
+    }
+
+
+    public void clearCart(){
         cart.clear();
     }
 
@@ -186,11 +199,12 @@ public class ProductManager {
                         product.getQty() + "個   " + product.getPrice() * product.getQty());
                 sum += product.getPrice() * product.getQty();
             }
-            System.out.println("\n会計：" + sum + "円");
+            System.out.println("会計：" + sum + "円");
             bill = sum;
             return 1;
         }
     }
+
 
     public boolean cashing(int paid){ //決済
         if((paid-bill) < 0){ //金額不足

@@ -39,7 +39,7 @@ public class Casher {
                                 break loop2;
                             } else {
                                 if(pm.cashing(control3)){
-                                    System.exit(0);
+                                    break loop1;
                                 }
                             }
                         }
@@ -60,7 +60,6 @@ public class Casher {
                     }
                 }
             }
-
             if (control1 == 0) { //カート内のクリア
                 pm.canselCart();
                 break;
@@ -68,5 +67,6 @@ public class Casher {
                 System.out.println("error");
             }
         }
+        pm.clearCart();
     }
 }

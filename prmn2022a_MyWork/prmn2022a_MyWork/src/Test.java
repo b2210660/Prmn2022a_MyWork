@@ -9,9 +9,11 @@ public class Test {
             FileManager fileManager = new FileManager("products.txt");
             String[] data = fileManager.getAsArray();
             ProductManager pm = new ProductManager(data);
-            Casher casher = new Casher(pm);
+
 
             while(true){ //ホーム
+                Casher casher = new Casher(pm);
+                Controler controler = new Controler(pm);
                 System.out.print("1:レジ  2:商品管理  3:終了  -->");
                 int control1 = input.nextInt();
                 if(control1 == 1){
@@ -23,6 +25,7 @@ public class Test {
                 }else{
                     System.out.println("error");
                 }
+                pm.autoStock();
             }
 
         } catch (IllegalArgumentException e1) {
