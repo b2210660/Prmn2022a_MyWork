@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Test {
@@ -9,7 +10,6 @@ public class Test {
             String[] data = fileManager.getAsArray();
             ProductManager pm = new ProductManager(data);
             Casher casher = new Casher(pm);
-            //pm.manualStock(input.nextInt(), input.nextInt());
 
             while(true){ //ホーム
                 System.out.print("1:レジ  2:商品管理  3:終了  -->");
@@ -26,9 +26,13 @@ public class Test {
             }
 
         } catch (IllegalArgumentException e1) {
-            System.out.println("error");
+            System.out.println("File Error");
         } catch (IOException e2) {
             System.out.println("error");
+        } catch (InputMismatchException e3){
+            System.out.println("Input Mismatch");
+        } finally {
+            System.out.println("終了します");
         }
 
     }

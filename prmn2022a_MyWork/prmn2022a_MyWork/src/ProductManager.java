@@ -90,27 +90,8 @@ public class ProductManager {
         }
     }
 
-    public void fixCart(int id, int fixQty){ //カートの修正（削除）
-        int newQty = cart.get(id-1).getQty() - fixQty; //新たなカート内個数
-        if(newQty < 0){ //個数以上に削除しようとしたときのエラー文
-            System.out.println("!! " + cart.get(id-1).getName() + "の個数は" + cart.get(id-1).getQty() + "です !!");
-        } else if (fixQty > products.get(id).getQty()){ //在庫以上に追加しようとしたときのエラー文
-            System.out.println("!! " + products.get(id-1).getName() + "の在庫は残り" + products.get(id-1).getQty() + "です !!");
-        } else { //正常に変更
-            if (newQty != 0) {
-                Product fixedProduct = new Product(newQty,
-                        cart.get(id - 1).getMaxQty(),
-                        cart.get(id - 1).getPrice(),
-                        cart.get(id - 1).getName(), id - 1);
-                cart.set(id - 1, fixedProduct);
-            } else { //カートから項目ごと削除
-                cart.remove(id - 1);
-            }
-            products.get(id-1).setQty(products.get(id-1).getQty() + fixQty);
-        }
-    }
 
-    public void fixingCart(int id, int fixedQty){
+    public void fixCart(int id, int fixedQty){
         int tmp = -1;
         if (id > (cart.size())  ||  id < 0) { //IDがカートの範囲からはみ出しているとき
             System.out.println("!! 商品番号は0~" + cart.size() + "から入力してください !!");

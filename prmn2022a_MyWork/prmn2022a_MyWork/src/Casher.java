@@ -51,7 +51,7 @@ public class Casher {
                         int a = input.nextInt();
                         System.out.print("購入個数：");
                         int b = input.nextInt();
-                        pm.fixingCart(a, b);
+                        pm.fixCart(a, b);
                     }else if(control2 == 9){
                         control1 = 0;
                         break;
