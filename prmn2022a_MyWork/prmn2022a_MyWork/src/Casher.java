@@ -11,6 +11,7 @@ public class Casher {
 
     public void cash() {
         loop1 : while (true) {
+            System.out.println("");
             pm.allStockView();
             System.out.print("0:戻る　1:カートに追加  2:会計確認  -->");
             int control1 = input.nextInt();
@@ -39,6 +40,7 @@ public class Casher {
                                 break loop2;
                             } else {
                                 if(pm.cashing(control3)){
+                                    pm.addSellerHistory();
                                     break loop1;
                                 }
                             }

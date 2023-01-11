@@ -1,11 +1,14 @@
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
 import java.util.Scanner;
 
 public class ProductManager {
     Scanner input = new Scanner(System.in);
-    private ArrayList<Product> products = new ArrayList<>();
-    private ArrayList<Product> cart = new ArrayList<>();
+    private ArrayList<Product> products = new ArrayList<>(); //在庫
+    private ArrayList<Product> cart = new ArrayList<>(); //カート内の商品群
+    private ArrayList<ArrayList<Product>> sellerHistory = new ArrayList<>(); //販売履歴
+    private ArrayList<Date> sellerDateHistory = new ArrayList<>(); //販売時刻履歴
     int addCartCnt = 0;
     int bill;
     public ProductManager(String[] data){ //商品を生成→ArrayListに追加
@@ -18,26 +21,28 @@ public class ProductManager {
 
 
     public void allStockView(){ //商品一覧
-        System.out.println("ID  商品名　　価格　　在庫");
+        System.out.println("ID  商品名   価格   在庫");
         for (int i=0 ; i< products.size() ; i++) {
-            System.out.print(products.get(i).getId() + "  ");
-            products.get(i).view();
+            System.out.println(products.get(i).getId() + "   " + products.get(i).getName() +
+                    "   " + products.get(i).getPrice() + "    " + products.get(i).getQty() + "個");
         }
     }
 
 
     public void allCartViewWithNumber(){ //カート修正のときのカート内一覧
-        System.out.println("番号  商品名　　価格　　在庫");
+
+        System.out.println("番号  商品名  選択数  残数");
         for (int i=0 ; i< cart.size() ; i++) {
-            System.out.print((i + 1) + "   ");
-            cart.get(i).view();
+            System.out.println((i + 1) + "    " + cart.get(i).getName() + "   " +
+                    cart.get(i).getQty() + "個    " + products.get(cart.get(i).getId()).getQty() + "個");
         }
     }
 
 
-    public void search(int id){ //商品検索
+    public void searchWithId(int id){ //商品検索
         products.get(id-1).view();
     }
+
 
     public void autoStock(){ //自動在庫補充(最大在庫から判定)
         boolean changed = false;
@@ -57,13 +62,19 @@ public class ProductManager {
     }
 
 
-    public void manualStock(int id, int adQty){ //手動在庫補充
+    public void manualStock(int id, int adQty){ //手動在庫調整
         int YesNo = 1;
         int newStock = products.get(id-1).getQty() + adQty;
-        if(newStock > products.get(id-1).getMaxQty()) { //最大在庫以上のときアラート
+        if (id > products.size()  ||  id < 1){
+            System.out.println("!! IDが異常です !!");
+        } else if (newStock > products.get(id-1).getMaxQty()) { //最大在庫以上のときアラート
             System.out.print("!! 在庫過多になる可能性があります !!\n" +
                     "最大在庫数：" + products.get(id-1).getMaxQty() + "  変更後在庫：" + newStock +
-                    "\n入荷を実行しますか？　　1:Yes 9:No  -->");
+                    "\n処理を実行しますか？　　1:Yes 9:No  -->");
+            YesNo = input.nextInt();
+        } else if (newStock < 0){
+            System.out.print("!! 在庫が異常値になります !!\n" + "変更後在庫：" + newStock +
+                    "\n処理を実行しますか？　　1:Yes 9:No  -->");
             YesNo = input.nextInt();
         }
         if(YesNo == 1){
@@ -71,57 +82,51 @@ public class ProductManager {
             System.out.println("*****変更後在庫*****");
             products.get(id-1).view();
         }else if(YesNo == 9){
-            System.out.println("手動入荷を中止します");
+            System.out.println("在庫調整を中止します");
         }else{
-            System.out.println("error\n手動入荷を中止します");
+            System.out.println("error\n在庫調整を中止します");
         }
     }
 
 
     public void addCart(int id, int buyQty){ //カートに追加
-        int newQty = products.get(id-1).getQty() - buyQty;
-        if(newQty < 0) { //在庫以上の個数を指定したときのエラー文
-            System.out.println("!! " + products.get(id-1).getName() + "の在庫は" + products.get(id-1).getQty() + "です !!");
-        }else { //正常にカート追加＆在庫変更
-            if (newQty == 0) {
-                System.out.println(products.get(id-1).getName() + "の在庫が0になりました");
+        if(id < 1  ||  id > products.size()) {
+            System.out.println("!! IDが異常です !!");
+        } else {
+            int newQty = products.get(id - 1).getQty() - buyQty;
+            if (newQty < 0) { //在庫以上の個数を指定したときのエラー文
+                System.out.println("!! " + products.get(id - 1).getName() + "の在庫は" + products.get(id - 1).getQty() + "です !!");
+            } else { //正常にカート追加＆在庫変更
+                if (newQty == 0) {
+                    System.out.println(products.get(id - 1).getName() + "の在庫が0になりました");
+                }
+                Product boughtProduct = new Product(buyQty,
+                        products.get(id - 1).getMaxQty(),
+                        products.get(id - 1).getPrice(),
+                        products.get(id - 1).getName(), id - 1);
+                cart.add(boughtProduct);
+                products.get(id - 1).setQty(newQty);
+                addCartCnt++;
             }
-            Product boughtProduct = new Product(buyQty,
-                    products.get(id-1).getMaxQty(),
-                    products.get(id-1).getPrice(),
-                    products.get(id-1).getName(), id-1);
-            cart.add(boughtProduct);
-            products.get(id-1).setQty(newQty);
-            addCartCnt++;
         }
     }
 
 
     public void fixCart(int id, int fixedQty){
-        int tmp = -1;
-        if (id > (cart.size())  ||  id < 0) { //IDがカートの範囲からはみ出しているとき
-            System.out.println("!! 商品番号は0~" + cart.size() + "から入力してください !!");
+        if (id > cart.size()  ||  id < 1) { //IDがカートの範囲からはみ出しているとき
+            System.out.println("!! IDが異常です !!");
         } else {
-            int difQty = fixedQty - cart.get(id - 1).getQty(); //カートのQtyの増加量
-            for (int i = 0; i < products.size(); i++) {
-                if (cart.get(id - 1).getId() == products.get(i).getId()) {
-                    tmp = i;
-                    break;
-                }
-            }
-            if (fixedQty < 0 || fixedQty > (cart.get(id - 1).getQty() + products.get(tmp).getQty())) { //fixedQty異常
-                System.out.println("!! 購入個数は0~" + (cart.get(id - 1).getQty() + products.get(tmp).getQty()) + "から入力してください !!");
+            int increase = fixedQty - cart.get(id-1).getQty();
+            if (increase > (products.get(cart.get(id-1).getId()).getQty())){
+                System.out.println("!! 在庫が不足しています !!");
+            } else if (fixedQty < 0){
+                System.out.println("!! 個数が異常です !!");
+            } else if (fixedQty == 0){
+                products.get(cart.get(id-1).getId()).setQty(products.get(cart.get(id-1).getId()).getQty() - increase);
+                cart.remove(id-1);
             } else {
-                if (fixedQty == 0) {
-                    cart.remove(id - 1);
-                } else {
-                    Product fixedProduct = new Product(fixedQty,
-                            cart.get(id - 1).getMaxQty(),
-                            cart.get(id - 1).getPrice(),
-                            cart.get(id - 1).getName(), id - 1);
-                    cart.set(id - 1, fixedProduct);
-                }
-                products.get(tmp + 1).setQty(products.get(tmp + 1).getQty() - difQty);
+                products.get(cart.get(id-1).getId()).setQty(products.get(cart.get(id-1).getId()).getQty() - increase);
+                cart.get(id-1).setQty(fixedQty);
             }
         }
     }
@@ -171,6 +176,7 @@ public class ProductManager {
     }
 
 
+
     public void canselCart(){
         for(int i=0 ; i<cart.size() ; i++){
             for(int j=0 ; j<products.size() ; j++){
@@ -183,9 +189,11 @@ public class ProductManager {
     }
 
 
+
     public void clearCart(){
         cart.clear();
     }
+
 
     public int allCartView(){ //カート内productの一覧
         if(cart.size() == 0){
@@ -193,10 +201,10 @@ public class ProductManager {
             return 0;
         }else {
             int sum = 0;
-            System.out.println("商品名　　価格　　個数   金額");
+            System.out.println("商品名   価格    個数   金額");
             for (Product product : cart) {
-                System.out.println(product.getName() + "   " + product.getPrice() + "円  " +
-                        product.getQty() + "個   " + product.getPrice() * product.getQty());
+                System.out.println(product.getName() + "   " + product.getPrice() + "円   " +
+                        product.getQty() + "個   " + product.getPrice() * product.getQty() + "円");
                 sum += product.getPrice() * product.getQty();
             }
             System.out.println("会計：" + sum + "円");
@@ -217,6 +225,37 @@ public class ProductManager {
             System.out.println("釣銭：" + (paid-bill) + "円\n決済が完了しました");
             return true;
         }
+    }
+
+
+    public void addSellerHistory(){
+        ArrayList<Product> tmpCart = new ArrayList<>();
+        tmpCart.addAll(cart);
+        sellerHistory.add(tmpCart);
+        sellerDateHistory.add(getDate());
+    }
+
+
+    public void viewSellerHistory(){
+        if(sellerHistory.size() == 0) {
+            System.out.println("!! 販売履歴がありません !!");
+        } else {
+            for (int i=0 ; i<sellerHistory.size() ; i++) {
+                System.out.println("***" + sellerDateHistory.get(i) + "***\n商品名  個数");
+                for (int j=0 ; j<sellerHistory.get(i).size() ; j++) {
+                    System.out.println(sellerHistory.get(i).get(j).getName() + "  " +
+                            sellerHistory.get(i).get(j).getQty());
+                }
+            }
+            System.out.println("*******************");
+        }
+        System.out.println("");
+    }
+
+
+    public Date getDate(){
+        Date date = new Date();
+        return date;
     }
 
 

@@ -19,7 +19,7 @@ public class Test {
                 if(control1 == 1){
                     casher.cash();
                 }else if(control1 == 2){
-                    System.out.println("未実装");
+                    controler.control();
                 }else if(control1 == 3){
                     break;
                 }else{
