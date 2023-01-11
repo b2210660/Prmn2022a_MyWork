@@ -12,6 +12,7 @@ public class Controler {
 
     public void control(){
         loop1: while(true){
+            System.out.println("");
             pm.allStockView();
             System.out.print("0:戻る  1:手動在庫調整  2:商品検索  3:販売実績  -->");
             int control1 = input.nextInt();
@@ -26,9 +27,9 @@ public class Controler {
                     System.out.print("0:戻る  1:ID検索  -->");
                     int control2 = input.nextInt();
                     if(control2 == 1){
-                        System.out.println("ID:");
+                        System.out.print("ID:");
                         int a = input.nextInt();
-                        pm.searchWithId(a);
+                        pm.searchById(a);
                         break loop2;
                     } else if (control2 == 0){
                         break loop2;

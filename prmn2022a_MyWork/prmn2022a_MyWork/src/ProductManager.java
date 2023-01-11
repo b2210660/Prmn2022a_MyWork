@@ -31,7 +31,7 @@ public class ProductManager {
 
     public void allCartViewWithNumber(){ //カート修正のときのカート内一覧
 
-        System.out.println("番号  商品名  選択数  残数");
+        System.out.println("\n番号  商品名  選択数  残数");
         for (int i=0 ; i< cart.size() ; i++) {
             System.out.println((i + 1) + "    " + cart.get(i).getName() + "   " +
                     cart.get(i).getQty() + "個    " + products.get(cart.get(i).getId()).getQty() + "個");
@@ -39,8 +39,14 @@ public class ProductManager {
     }
 
 
-    public void searchWithId(int id){ //商品検索
-        products.get(id-1).view();
+    public void searchById(int id){ //商品検索
+        if (id > products.size()  ||  id < 1) {
+            System.out.println("!! IDが異常です !!");
+        } else {
+            System.out.println("\n*****検索結果*****");
+            products.get(id - 1).view();
+            System.out.println("*****************\n");
+        }
     }
 
 
@@ -50,7 +56,7 @@ public class ProductManager {
             int value = product.getMaxQty() / 2;
             if (product.getQty() < value) { //最大在庫の半数以下で自動入荷
                 product.setQty(product.getQty() + value);
-                System.out.println(product.getName() + "を" + value + "個入荷しました");
+                System.out.println("\n" + product.getName() + "を" + value + "個入荷しました");
                 changed = true;
             }
         }
@@ -79,8 +85,9 @@ public class ProductManager {
         }
         if(YesNo == 1){
             products.get(id-1).setQty(newStock);
-            System.out.println("*****変更後在庫*****");
+            System.out.println("\n*****変更後在庫*****");
             products.get(id-1).view();
+            System.out.println("*********************\n");
         }else if(YesNo == 9){
             System.out.println("在庫調整を中止します");
         }else{
@@ -197,11 +204,11 @@ public class ProductManager {
 
     public int allCartView(){ //カート内productの一覧
         if(cart.size() == 0){
-            System.out.println("!! カートに商品が入っていません !!");
+            System.out.println("\n!! カートに商品が入っていません !!");
             return 0;
         }else {
             int sum = 0;
-            System.out.println("商品名   価格    個数   金額");
+            System.out.println("\n商品名   価格    個数   金額");
             for (Product product : cart) {
                 System.out.println(product.getName() + "   " + product.getPrice() + "円   " +
                         product.getQty() + "個   " + product.getPrice() * product.getQty() + "円");
@@ -238,16 +245,16 @@ public class ProductManager {
 
     public void viewSellerHistory(){
         if(sellerHistory.size() == 0) {
-            System.out.println("!! 販売履歴がありません !!");
+            System.out.println("\n!! 販売履歴がありません !!");
         } else {
             for (int i=0 ; i<sellerHistory.size() ; i++) {
-                System.out.println("***" + sellerDateHistory.get(i) + "***\n商品名  個数");
+                System.out.println("\n***" + sellerDateHistory.get(i) + "***\n商品名  個数");
                 for (int j=0 ; j<sellerHistory.get(i).size() ; j++) {
                     System.out.println(sellerHistory.get(i).get(j).getName() + "  " +
                             sellerHistory.get(i).get(j).getQty());
                 }
             }
-            System.out.println("*******************");
+            System.out.println("**********************************");
         }
         System.out.println("");
     }

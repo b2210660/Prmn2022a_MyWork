@@ -14,7 +14,7 @@ public class Test {
             while(true){ //ホーム
                 Casher casher = new Casher(pm);
                 Controler controler = new Controler(pm);
-                System.out.print("1:レジ  2:商品管理  3:終了  -->");
+                System.out.print("\n1:レジ  2:商品管理  3:終了  -->");
                 int control1 = input.nextInt();
                 if(control1 == 1){
                     casher.cash();
